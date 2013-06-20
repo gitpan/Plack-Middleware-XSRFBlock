@@ -1,0 +1,40 @@
+This file contains message digests of all files listed in MANIFEST,
+signed via the Module::Signature module, version 0.70.
+
+To verify the content in this distribution, first make sure you have
+Module::Signature installed, then type:
+
+    % cpansign -v
+
+It will check each file's integrity, as well as the signature's
+validity.  If "==> Signature verified OK! <==" is not displayed,
+the distribution may already have been compromised, and you should
+not run its Makefile.PL or Build.PL.
+
+-----BEGIN PGP SIGNED MESSAGE-----
+Hash: SHA1
+
+SHA1 6cd1cacd8535e2bcc32a76bd4ef09b637a6db38d Changes
+SHA1 a68cf50735f7b821045517238f60b3c032956372 LICENSE
+SHA1 2f3dac43b00f535aaba79f027b8abb67806328f7 MANIFEST
+SHA1 1fe53dfe4a9a6f178ff42d2ab77e8362282b3705 META.yml
+SHA1 bdd9125035f18ec35a13fc53ff852c7c85d1a614 Makefile.PL
+SHA1 95e23f649b11a7e54b6a68cdece7fe17bfa0fb0b README
+SHA1 7d4ff2475a439f3c6df3576fb56272792daff6ac README.mkdn
+SHA1 4352d27a6d7d260e27cf795a6eca5edac0578c2b dist.ini
+SHA1 71c0c4bade9460f902e5ea2a55c5de48a71b1633 lib/Plack/Middleware/XSRFBlock.pm
+SHA1 86cd488198ef1835477613f6a2256994986660aa t/00-load.t
+SHA1 ab712b29b7eae1176bc8eb2710206af00c5d7ead t/01.basic.t
+SHA1 66bfe8be526fd24544bc5004af9c5adcf40780dc t/lib/Plack/Test/MockHTTP.pm
+SHA1 2c8ba6f993737b523e8573efc004077899011575 t/lib/Test/XSRFBlock/App.pm
+SHA1 6ea81e3865946a14536f97ccc65fee4b218c8148 t/release-kwalitee.t
+SHA1 455d1dd1867212a665ad5ea4126b572411de300c t/release-no-tabs.t
+SHA1 9433c240fe590bc404ab68ff63984df763e347ed t/release-pod-coverage.t
+SHA1 b30cbdfaf935017c4568c0c91b242438cb87786e t/release-pod-syntax.t
+-----BEGIN PGP SIGNATURE-----
+Version: GnuPG v1.4.5 (GNU/Linux)
+
+iD8DBQFRwuC5h4j7xTiFuxERAhaWAJ9igpouNQsIsJZqEKbXfwhJyfzMBgCgt2MU
+CPpCfXFVljrSH1flMIZaeBE=
+=GQUh
+-----END PGP SIGNATURE-----
