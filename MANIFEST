@@ -10,8 +10,11 @@ dist.ini
 lib/Plack/Middleware/XSRFBlock.pm
 t/00-load.t
 t/01.basic.t
+t/02.content.t
+t/03.one.use.token.t
 t/lib/Plack/Test/MockHTTP.pm
 t/lib/Test/XSRFBlock/App.pm
+t/lib/Test/XSRFBlock/Util.pm
 t/release-kwalitee.t
 t/release-no-tabs.t
 t/release-pod-coverage.t

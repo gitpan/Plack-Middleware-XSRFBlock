@@ -1,6 +1,6 @@
 package Plack::Middleware::XSRFBlock;
 {
-  $Plack::Middleware::XSRFBlock::VERSION = '0.0.0_01';
+  $Plack::Middleware::XSRFBlock::VERSION = '0.0.0_02';
 }
 {
   $Plack::Middleware::XSRFBlock::DIST = 'Plack-Middleware-XSRFBlock';
@@ -20,6 +20,7 @@ use Plack::Util::Accessor qw(
     cookie_name
     logger
     meta_tag
+    token_per_request
     parameter_name
     _token_generator
 );
@@ -30,9 +31,13 @@ sub prepare_app {
     $self->parameter_name('xsrf_token') unless defined $self->parameter_name;
 
     # store the cookie_name
-    $self->cookie_name(
-        $self->cookie_name || 'PSGI-XSRF-Token'
-    );
+    $self->cookie_name( $self->cookie_name || 'PSGI-XSRF-Token' );
+
+    # default to one token per session, not one per request
+    $self->token_per_request( $self->token_per_request || 0 );
+
+    # help AJAX users by adding the token as a meta tag
+    $self->meta_tag( undef ) unless $self->meta_tag;
 
     $self->_token_generator(sub{
         my $data    = rand() . $$ . {} . time;
@@ -77,6 +82,13 @@ sub call {
     return Plack::Util::response_cb($self->app->($env), sub {
         my $res = shift;
 
+        # if we asked for token_per_request then we *always* create a new token
+        $cookie_value = $self->_token_generator->()
+            if $self->token_per_request;
+
+        # get the token value from:
+        # - cookie value, if it's already set
+        # - from the generator, if we don't have one yet
         my $token = $cookie_value ||= $self->_token_generator->();
 
         # we need to add our cookie
@@ -102,14 +114,16 @@ sub call {
 
         $p->handler(default => [\@out , '@{text}']),
 
-        # we only care about two types of tag:
-        $p->report_tags(qw/head form/);
+        # we need *all* tags, otherwise we end up with gibberish as the final
+        # page output
+        # i.e. unless there's a better way, we *can not* do
+        #    $p->report_tags(qw/head form/);
 
-        # inject out xSRF information
+        # inject our xSRF information
         $p->handler(
             start => sub {
                 my($tag, $attr, $text) = @_;
-                # we never want to thrown anything away
+                # we never want to throw anything away
                 push @out, $text;
 
                 # for easier comparison
@@ -141,7 +155,7 @@ sub call {
                 ) {
                     push @out,
                         sprintf(
-                            '<input type="hidden" "name="%s" value="%s" />',
+                            '<input type="hidden" name="%s" value="%s" />',
                             $parameter_name,
                             $token
                         );
@@ -149,6 +163,15 @@ sub call {
 
                 # TODO: determine xhtml or html?
                 return;
+            },
+            "tagname, attr, text",
+        );
+
+        # we never want to throw anything away
+        $p->handler(
+            default => sub {
+                my($tag, $attr, $text) = @_;
+                push @out, $text;
             },
             "tagname, attr, text",
         );
@@ -225,12 +248,66 @@ Plack::Middleware::XSRFBlock - Block XSRF Attacks with minimal changes to your a
 
 =head1 VERSION
 
-version 0.0.0_01
+version 0.0.0_02
+
+=head1 SYNOPSIS
+
+The simplest way to use the plugin is:
+
+    use Plack::Builder;
+
+    my $app = sub { ... };
+
+    builder {
+        enable 'XSRFBlock';
+        $app;
+    }
+
+You may also over-ride any, or all of these values:
+
+    builder {
+        enable 'XSRFBlock',
+            parameter_name      => 'xsrf_token',
+            cookie_name         => 'PSGI-XSRF-Token',
+            token_per_request   => 0,
+            meta_tag            => undef,
+        ;
+        $app;
+    }
 
 =head1 DESCRIPTION
 
 This middleware blocks XSRF. You can use this middleware without any
 modifications to your application.
+
+=head1 OPTIONS
+
+=over 4
+
+=item parameter_name (default: 'xsrf_token')
+
+The name assigned to the hidden form input containing the token.
+
+=item cookie_name (default: 'PSGI-XSRF-Token')
+
+The name of the cookie used to store the token value.
+
+=item token_per_request (default: 0)
+
+If this is true a new token is assigned for each request made.
+
+This may make your application more secure, or less susceptible to
+double-submit issues.
+
+=item meta_tag (default: undef)
+
+If this is set, use the value as the name of the meta tag to add to the head
+section of output pages.
+
+This is useful when you are using javascript that requires access to the token
+value for making AJAX requests.
+
+=back
 
 =head1 EXPLANATION
 

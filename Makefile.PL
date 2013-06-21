@@ -44,11 +44,12 @@ my %WriteMakefileArgs = (
     "Plack::Builder" => 0,
     "Plack::Session::State::Cookie" => 0,
     "Plack::Test" => 0,
+    "Sub::Exporter" => 0,
     "Test::More" => 0,
     "Test::UseAllModules" => 0,
     "Try::Tiny" => 0
   },
-  "VERSION" => "0.0.0_01",
+  "VERSION" => "0.0.0_02",
   "test" => {
     "TESTS" => "t/*.t"
   }

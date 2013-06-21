@@ -1,5 +1,15 @@
 Revision history for Plack-Middleware-XSRFBlock
 
+0.0.0_02  2013-06-21 15:07:06 Europe/London
+
+ - fix content modification so we don't throw most of it away
+ - fix broken input field
+ - allow meta_tag value to be set/over-ridden
+ - add 'token_per_request' feature
+ - factor out some common test functions
+   and update tests to use Test::XSRFBlock::Util
+ - extend documentation
+
 0.0.0_01  2013-06-20 12:00:04 Europe/London
 
  - Initial release
