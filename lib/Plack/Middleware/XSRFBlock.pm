@@ -1,6 +1,6 @@
 package Plack::Middleware::XSRFBlock;
 {
-  $Plack::Middleware::XSRFBlock::VERSION = '0.0.0_03';
+  $Plack::Middleware::XSRFBlock::VERSION = '0.0.0_04';
 }
 {
   $Plack::Middleware::XSRFBlock::DIST = 'Plack-Middleware-XSRFBlock';
@@ -248,7 +248,7 @@ Plack::Middleware::XSRFBlock - Block XSRF Attacks with minimal changes to your a
 
 =head1 VERSION
 
-version 0.0.0_03
+version 0.0.0_04
 
 =head1 SYNOPSIS
 
@@ -352,6 +352,28 @@ screen/tab state).
 Trying to modify the existing module to provide the extra functionality and
 behaviour we decided worked better for our use seemed too far reaching to try
 to force into the existing module.
+
+=head2 FURTHER READING
+
+=over 4
+
+=item * Preventing CSRF and XSRF Attacks
+
+http://www.codinghorror.com/blog/2008/10/preventing-csrf-and-xsrf-attacks.html
+
+=item * Preventing Cross Site Request Forgery (CSRF)
+
+https://www.golemtechnologies.com/articles/csrf
+
+=item * Cross-Site Request Forgeries: Exploitation and Prevention [PDF]
+
+https://www.eecs.berkeley.edu/~daw/teaching/cs261-f11/reading/csrf.pdf
+
+=item * Cross-Site Request Forgery (CSRF) Prevention Cheat Sheet
+
+https://www.owasp.org/index.php/Cross-Site_Request_Forgery_(CSRF)_Prevention_Cheat_Sheet
+
+=back
 
 =head2 SEE ALSO
 
