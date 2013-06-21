@@ -42,4 +42,4 @@ requires:
 resources:
   bugtracker: http://github.com/chiselwright/Plack-Middleware-XSRFBlock/issues
   repository: git://github.com/chiselwright/plack-middleware-xsrfblock.git
-version: 0.0.0_02
+version: 0.0.0_03

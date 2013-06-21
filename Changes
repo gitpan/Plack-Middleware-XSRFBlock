@@ -1,5 +1,9 @@
 Revision history for Plack-Middleware-XSRFBlock
 
+0.0.0_03  2013-06-21 15:47:42 Europe/London
+
+ - extend and refactor tests
+
 0.0.0_02  2013-06-21 15:07:06 Europe/London
 
  - fix content modification so we don't throw most of it away
