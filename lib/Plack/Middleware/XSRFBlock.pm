@@ -1,6 +1,6 @@
 package Plack::Middleware::XSRFBlock;
 {
-  $Plack::Middleware::XSRFBlock::VERSION = '0.0.0_04';
+  $Plack::Middleware::XSRFBlock::VERSION = '0.0.0_05';
 }
 {
   $Plack::Middleware::XSRFBlock::DIST = 'Plack-Middleware-XSRFBlock';
@@ -17,6 +17,7 @@ use Plack::Response;
 use Plack::Util;
 use Plack::Util::Accessor qw(
     blocked
+    cookie_expiry_seconds
     cookie_name
     logger
     meta_tag
@@ -28,7 +29,8 @@ use Plack::Util::Accessor qw(
 sub prepare_app {
     my $self = shift;
 
-    $self->parameter_name('xsrf_token') unless defined $self->parameter_name;
+    # this needs a value if we aren't given one
+    $self->parameter_name( $self->parameter_name || 'xsrf_token' );
 
     # store the cookie_name
     $self->cookie_name( $self->cookie_name || 'PSGI-XSRF-Token' );
@@ -36,8 +38,8 @@ sub prepare_app {
     # default to one token per session, not one per request
     $self->token_per_request( $self->token_per_request || 0 );
 
-    # help AJAX users by adding the token as a meta tag
-    $self->meta_tag( undef ) unless $self->meta_tag;
+    # default to a cookie life of three hours
+    $self->cookie_expiry_seconds( $self->cookie_expiry_seconds || (3 * 60 * 60) );
 
     $self->_token_generator(sub{
         my $data    = rand() . $$ . {} . time;
@@ -96,7 +98,7 @@ sub call {
             $token,
             $res,
             path    => '/',
-            expires => time + (3 * 60 * 60), # three hours into the future
+            expires => time + $self->cookie_expiry_seconds,
         );
 
         # we can't form-munge anything non-HTML
@@ -137,7 +139,7 @@ sub call {
                     # Requests
                     push @out,
                         sprintf(
-                            q{<meta name="%s" content="$s"/>},
+                            q{<meta name="%s" content="%s"/>},
                             $self->meta_tag,
                             $token
                         );
@@ -248,7 +250,7 @@ Plack::Middleware::XSRFBlock - Block XSRF Attacks with minimal changes to your a
 
 =head1 VERSION
 
-version 0.0.0_04
+version 0.0.0_05
 
 =head1 SYNOPSIS
 
@@ -267,10 +269,14 @@ You may also over-ride any, or all of these values:
 
     builder {
         enable 'XSRFBlock',
-            parameter_name      => 'xsrf_token',
-            cookie_name         => 'PSGI-XSRF-Token',
-            token_per_request   => 0,
-            meta_tag            => undef,
+            parameter_name          => 'xsrf_token',
+            cookie_name             => 'PSGI-XSRF-Token',
+            cookie_expiry_seconds   => (3 * 60 * 60),
+            token_per_request       => 0,
+            meta_tag                => undef,
+            blocked                 => sub {
+                                        return [ $status, $headers, $body ]
+                                    },
         ;
         $app;
     }
@@ -307,6 +313,14 @@ section of output pages.
 This is useful when you are using javascript that requires access to the token
 value for making AJAX requests.
 
+=item blocked (default: undef)
+
+If this is set it should be a PSGI application that is returned instead of the
+default HTTP_FORBIDDEN(403) and text/plain response.
+
+This could be useful if you'd like to perform some action that's more in
+keeping with your application - e.g. return a styled error page.
+
 =back
 
 =head1 EXPLANATION
@@ -321,22 +335,19 @@ L<Preventing CSRF and XSRF Attacks|http://www.codinghorror.com/blog/2008/10/prev
 The driving comment behind this implementation is from
 L<the Felten and Zeller paper|https://www.eecs.berkeley.edu/~daw/teaching/cs261-f11/reading/csrf.pdf>:
 
-    When a user visits a site, the site should generate a
-    (cryptographically strong) pseudorandom value and set it as
-    a cookie on the user's machine. The site should require
-    every form submission to include this pseudorandom value as
-    a form value and also as a cookie value. When a POST request
-    is sent to the site, the request should only be considered
-    valid if the form value and the cookie value are the same.
-    When an attacker submits a form on behalf of a user, he can
-    only modify the values of the form. An attacker cannot read
-    any data sent from the server or modify cookie values, per
-    the same-origin policy.  This means that while an attacker
-    can send any value he wants with the form, he will be unable
-    to modify or read the value stored in the cookie. Since the
-    cookie value and the form value must be the same, the
-    attacker will be unable to successfully submit a form unless
-    he is able to guess the pseudorandom value.
+    When a user visits a site, the site should generate a (cryptographically
+    strong) pseudorandom value and set it as a cookie on the user's machine.
+    The site should require every form submission to include this pseudorandom
+    value as a form value and also as a cookie value. When a POST request is
+    sent to the site, the request should only be considered valid if the form
+    value and the cookie value are the same.  When an attacker submits a form
+    on behalf of a user, he can only modify the values of the form. An
+    attacker cannot read any data sent from the server or modify cookie
+    values, per the same-origin policy.  This means that while an attacker can
+    send any value he wants with the form, he will be unable to modify or read
+    the value stored in the cookie. Since the cookie value and the form value
+    must be the same, the attacker will be unable to successfully submit a
+    form unless he is able to guess the pseudorandom value.
 
 =head2 What's wrong with Plack::Middleware::CSRFBlock?
 
@@ -359,19 +370,19 @@ to force into the existing module.
 
 =item * Preventing CSRF and XSRF Attacks
 
-http://www.codinghorror.com/blog/2008/10/preventing-csrf-and-xsrf-attacks.html
+L<http://www.codinghorror.com/blog/2008/10/preventing-csrf-and-xsrf-attacks.html>
 
 =item * Preventing Cross Site Request Forgery (CSRF)
 
-https://www.golemtechnologies.com/articles/csrf
+L<https://www.golemtechnologies.com/articles/csrf>
 
 =item * Cross-Site Request Forgeries: Exploitation and Prevention [PDF]
 
-https://www.eecs.berkeley.edu/~daw/teaching/cs261-f11/reading/csrf.pdf
+L<https://www.eecs.berkeley.edu/~daw/teaching/cs261-f11/reading/csrf.pdf>
 
 =item * Cross-Site Request Forgery (CSRF) Prevention Cheat Sheet
 
-https://www.owasp.org/index.php/Cross-Site_Request_Forgery_(CSRF)_Prevention_Cheat_Sheet
+L<https://www.owasp.org/index.php/Cross-Site_Request_Forgery_(CSRF)_Prevention_Cheat_Sheet>
 
 =back
 

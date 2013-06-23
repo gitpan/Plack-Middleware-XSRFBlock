@@ -1,6 +1,14 @@
 Revision history for Plack-Middleware-XSRFBlock
 
+0.0.0_05  2013-06-24 00:29:09 Europe/London
+
+ - add test(s) for 'meta_tag' option
+ - add test(s) for 'blocked' option
+ - add 'cookie_expiry_seconds' option
+ - add documentation for 'blocked' option
+
 0.0.0_04  2013-06-21 16:03:08 Europe/London
+
  - add FURTHER READING to documentation
  - add missing test module dependency
 
