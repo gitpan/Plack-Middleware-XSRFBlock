@@ -1,6 +1,6 @@
 package Plack::Middleware::XSRFBlock;
 {
-  $Plack::Middleware::XSRFBlock::VERSION = '0.0.0_05';
+  $Plack::Middleware::XSRFBlock::VERSION = '0.0.1';
 }
 {
   $Plack::Middleware::XSRFBlock::DIST = 'Plack-Middleware-XSRFBlock';
@@ -23,6 +23,7 @@ use Plack::Util::Accessor qw(
     meta_tag
     token_per_request
     parameter_name
+    header_name
     _token_generator
 );
 
@@ -66,11 +67,26 @@ sub call {
     if ($request->method =~ m{^post$}i) {
         $self->log(info => 'POST submitted');
 
-        my $val = $request->parameters->{ $self->parameter_name } || '';
+        # X- header takes precedence over form fields
+        my $val;
+        $val = $request->header( $self->header_name )
+            if (defined $self->header_name);
+        # fallback to the parameter value
+        $val ||= $request->parameters->{ $self->parameter_name };
 
-        # it's an immediate fail if we can't find the parameter
-        return $self->xsrf_detected({ msg => 'form field missing'})
-            unless $val;
+        # it's not easy to decide if we're missing the X- value or the form
+        # value
+        # We can say for certain that if we don't have the header_name set
+        # it's a missing form parameter
+        # If it is set ... well, either could be missing
+        if (not defined $val and not length $val) {
+            # no X- headers expected
+            return $self->xsrf_detected({ msg => 'form field missing'})
+                if not defined $self->header_name;
+
+            # X- headers and form data allowed
+            return $self->xsrf_detected({ msg => 'xsrf token missing'})
+        }
 
         # get the value we expect from the cookie
         return $self->xsrf_detected({ msg => 'cookie missing'})
@@ -101,8 +117,11 @@ sub call {
             expires => time + $self->cookie_expiry_seconds,
         );
 
+        # make it easier to work with the headers
+        my $headers = Plack::Util::headers($res->[1]);
+
         # we can't form-munge anything non-HTML
-        my $ct = Plack::Util::header_get($res->[1], 'Content-Type') || '';
+        my $ct = $headers->get('Content-Type') || '';
         if($ct !~ m{^text/html}i and $ct !~ m{^application/xhtml[+]xml}i){
             return $res;
         }
@@ -146,11 +165,19 @@ sub call {
                 }
 
                 # If tag isn't 'form' and method isn't 'post' we dont care
-                return unless $tag eq 'form' && $attr->{'method'} =~ /post/i;
+                return unless
+                       defined $tag
+                    && defined $attr->{'method'}
+                    && $tag eq 'form'
+                    && $attr->{'method'} =~ /post/i;
 
                 if(
                     !(
+                        defined $attr
+                            and
                         $attr->{'action'} =~ m{^https?://([^/:]+)[/:]}
+                            and
+                        defined $http_host
                             and
                         $1 ne $http_host
                     )
@@ -250,7 +277,7 @@ Plack::Middleware::XSRFBlock - Block XSRF Attacks with minimal changes to your a
 
 =head1 VERSION
 
-version 0.0.0_05
+version 0.0.1
 
 =head1 SYNOPSIS
 
@@ -274,6 +301,7 @@ You may also over-ride any, or all of these values:
             cookie_expiry_seconds   => (3 * 60 * 60),
             token_per_request       => 0,
             meta_tag                => undef,
+            header_name             => undef,
             blocked                 => sub {
                                         return [ $status, $headers, $body ]
                                     },
@@ -313,6 +341,12 @@ section of output pages.
 This is useful when you are using javascript that requires access to the token
 value for making AJAX requests.
 
+=item header_name (default: undef)
+
+If this is set, use the value as the name of the response heaer that the token
+can be sent in. This is useful for non-browser based submissions; e.g.
+Javascript AJAX requests.
+
 =item blocked (default: undef)
 
 If this is set it should be a PSGI application that is returned instead of the
@@ -320,6 +354,35 @@ default HTTP_FORBIDDEN(403) and text/plain response.
 
 This could be useful if you'd like to perform some action that's more in
 keeping with your application - e.g. return a styled error page.
+
+=back
+
+=head1 ERRORS
+
+The module emits various errors based on the cause of the XSRF detected. The
+messages will be of the form C<XSRF detected [reason]>
+
+=over 4
+
+=item form field missing
+
+The request was submitted but there was no value submitted in the form field
+specified by <C$self->parameter_name> [default: xsrf_token]
+
+=item xsrf token missing
+
+The application has been configured to accept an 'X-' header and no token
+value was found in either the header or a suitable form field. [default: undef]
+
+=item cookie missing
+
+There is no cookie with the name specified by C<$self->cookie_name> [default:
+PSGI-XSRF-Token]
+
+=item invalid token
+
+The cookie token and form value were both submitted correctly but the values
+do not match.
 
 =back
 

@@ -33,6 +33,7 @@ my %WriteMakefileArgs = (
   },
   "TEST_REQUIRES" => {
     "Carp" => 0,
+    "Data::Printer" => 0,
     "FindBin::libs" => 0,
     "HTTP::Cookies" => 0,
     "HTTP::Message::PSGI" => 0,
@@ -42,6 +43,7 @@ my %WriteMakefileArgs = (
     "LWP::UserAgent" => 0,
     "Log::Dispatch" => 0,
     "Plack::Builder" => 0,
+    "Plack::Request" => 0,
     "Plack::Session::State::Cookie" => 0,
     "Plack::Test" => 0,
     "Sub::Exporter" => 0,
@@ -49,7 +51,7 @@ my %WriteMakefileArgs = (
     "Test::UseAllModules" => 0,
     "Try::Tiny" => 0
   },
-  "VERSION" => "0.0.0_05",
+  "VERSION" => "0.0.1",
   "test" => {
     "TESTS" => "t/*.t"
   }

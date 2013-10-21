@@ -3,7 +3,7 @@ NAME
     to your app
 
 VERSION
-    version 0.0.0_05
+    version 0.0.1
 
 SYNOPSIS
     The simplest way to use the plugin is:
@@ -26,6 +26,7 @@ SYNOPSIS
                 cookie_expiry_seconds   => (3 * 60 * 60),
                 token_per_request       => 0,
                 meta_tag                => undef,
+                header_name             => undef,
                 blocked                 => sub {
                                             return [ $status, $headers, $body ]
                                         },
@@ -57,6 +58,11 @@ OPTIONS
         This is useful when you are using javascript that requires access to
         the token value for making AJAX requests.
 
+    header_name (default: undef)
+        If this is set, use the value as the name of the response heaer that
+        the token can be sent in. This is useful for non-browser based
+        submissions; e.g. Javascript AJAX requests.
+
     blocked (default: undef)
         If this is set it should be a PSGI application that is returned
         instead of the default HTTP_FORBIDDEN(403) and text/plain response.
@@ -64,6 +70,28 @@ OPTIONS
         This could be useful if you'd like to perform some action that's
         more in keeping with your application - e.g. return a styled error
         page.
+
+ERRORS
+    The module emits various errors based on the cause of the XSRF detected.
+    The messages will be of the form "XSRF detected [reason]"
+
+    form field missing
+        The request was submitted but there was no value submitted in the
+        form field specified by <C$self->parameter_name> [default:
+        xsrf_token]
+
+    xsrf token missing
+        The application has been configured to accept an 'X-' header and no
+        token value was found in either the header or a suitable form field.
+        [default: undef]
+
+    cookie missing
+        There is no cookie with the name specified by "$self-"cookie_name>
+        [default: PSGI-XSRF-Token]
+
+    invalid token
+        The cookie token and form value were both submitted correctly but
+        the values do not match.
 
 EXPLANATION
     This module is similar in nature and intention to
