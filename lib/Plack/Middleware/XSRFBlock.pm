@@ -1,10 +1,9 @@
 package Plack::Middleware::XSRFBlock;
-{
-  $Plack::Middleware::XSRFBlock::VERSION = '0.0.1';
-}
+$Plack::Middleware::XSRFBlock::VERSION = '0.0.2';
 {
   $Plack::Middleware::XSRFBlock::DIST = 'Plack-Middleware-XSRFBlock';
 }
+
 use strict;
 use warnings;
 use parent 'Plack::Middleware';
@@ -19,6 +18,7 @@ use Plack::Util::Accessor qw(
     blocked
     cookie_expiry_seconds
     cookie_name
+    cookie_options
     logger
     meta_tag
     token_per_request
@@ -35,6 +35,9 @@ sub prepare_app {
 
     # store the cookie_name
     $self->cookie_name( $self->cookie_name || 'PSGI-XSRF-Token' );
+
+    # extra optional options for the cookie
+    $self->cookie_options( $self->cookie_options || {} );
 
     # default to one token per session, not one per request
     $self->token_per_request( $self->token_per_request || 0 );
@@ -258,6 +261,7 @@ sub _set_cookie {
     $response->cookies->{ $self->cookie_name } = +{
         value => $id,
         %options,
+        %{ $self->cookie_options },
     };
 
     my $final_r = $response->finalize;
@@ -271,13 +275,15 @@ sub _set_cookie {
 
 =pod
 
+=encoding UTF-8
+
 =head1 NAME
 
 Plack::Middleware::XSRFBlock - Block XSRF Attacks with minimal changes to your app
 
 =head1 VERSION
 
-version 0.0.1
+version 0.0.2
 
 =head1 SYNOPSIS
 
@@ -298,6 +304,7 @@ You may also over-ride any, or all of these values:
         enable 'XSRFBlock',
             parameter_name          => 'xsrf_token',
             cookie_name             => 'PSGI-XSRF-Token',
+            cookie_options          => {},
             cookie_expiry_seconds   => (3 * 60 * 60),
             token_per_request       => 0,
             meta_tag                => undef,
@@ -325,6 +332,16 @@ The name assigned to the hidden form input containing the token.
 =item cookie_name (default: 'PSGI-XSRF-Token')
 
 The name of the cookie used to store the token value.
+
+=item cookie_options (default: {})
+
+Extra cookie options to be set with the cookie.  This is useful for things like
+setting C<HttpOnly> to tell the browser to only send it with HTTP requests,
+and C<Secure> on the cookie to force the cookie to only be sent on SSL requests.
+
+    builder {
+        enable 'XSRFBlock', cookie_options => { secure => 1, httponly => 1 };
+    }
 
 =item token_per_request (default: 0)
 
@@ -465,6 +482,24 @@ This software is copyright (c) 2013 by Chisel Wright.
 
 This is free software; you can redistribute it and/or modify it under
 the same terms as the Perl 5 programming language system itself.
+
+=head1 CONTRIBUTORS
+
+=over 4
+
+=item *
+
+Chisel <chisel.wright@net-a-porter.com>
+
+=item *
+
+Chisel Wright <chisel@chizography.net>
+
+=item *
+
+William Wolf <throughnothing@gmail.com>
+
+=back
 
 =cut
 

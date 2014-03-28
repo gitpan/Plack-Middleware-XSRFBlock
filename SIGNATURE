@@ -1,5 +1,5 @@
 This file contains message digests of all files listed in MANIFEST,
-signed via the Module::Signature module, version 0.70.
+signed via the Module::Signature module, version 0.73.
 
 To verify the content in this distribution, first make sure you have
 Module::Signature installed, then type:
@@ -14,15 +14,16 @@ not run its Makefile.PL or Build.PL.
 -----BEGIN PGP SIGNED MESSAGE-----
 Hash: SHA1
 
-SHA1 8c6a89dbffb2964220573a4ed4627172eba073c6 Changes
+SHA1 f2dcb98e8a40a895840d812ddc93787591b026b0 Changes
 SHA1 a68cf50735f7b821045517238f60b3c032956372 LICENSE
-SHA1 fd04b08d704941fa1bbe0c36aa0cb25d26239738 MANIFEST
-SHA1 d63bb6333cdda70763212cd261f866bb464ce0ee META.yml
-SHA1 1cc50002e2a63a4936f1e0021fcd0f47e9e3d356 Makefile.PL
-SHA1 8685c1b1e577e7eaf0851403c1e37e1f5aa7b612 README
-SHA1 25e6008c746ef0867c0f28a0044b0e37588e247b README.mkdn
-SHA1 74ffa51355feeb2035b70441beb832f095371ee5 dist.ini
-SHA1 d152eb5ef1dcd4ffadbcc48417c76b54bffcbac5 lib/Plack/Middleware/XSRFBlock.pm
+SHA1 febf1a6fc2bac1dbe96695948e4fb615832beda9 MANIFEST
+SHA1 9098a86755ef49d4466d2f80ddebe1fef4c562d7 META.json
+SHA1 63799271cec55e896b0ad93520e4f2711e394faa META.yml
+SHA1 dbc8f392cdc8c30686b104c1cba7dcc7b88a691d Makefile.PL
+SHA1 37f9ed8809c226a6189928a3dc6c16a43fbfcb00 README
+SHA1 fbd49738445f324590ac849bcaebc300ae43b5df README.mkdn
+SHA1 ba5f134eafc9ffcdcd18c54d0dd8ea3a637360c8 dist.ini
+SHA1 48f5e3ec9d13bef73fc3f7d94ed979c988c56b5d lib/Plack/Middleware/XSRFBlock.pm
 SHA1 86cd488198ef1835477613f6a2256994986660aa t/00-load.t
 SHA1 637ced0fa3c9aa4d5d05107aa2da3f52d9eeafa3 t/01.basic.t
 SHA1 2e66df9491f80ffd07d7f4dae4ce9581d60eb38c t/02.content.t
@@ -30,17 +31,19 @@ SHA1 4841d3a41a01bc1ef8dbc38dbf021e5e9d58dc16 t/03.blocked.t
 SHA1 259f1d716c429b31057069889e7b25b0a4cda990 t/03.meta_tag.t
 SHA1 e671491ac8c4b130799f31f7e08ec8a354016737 t/03.request_header.t
 SHA1 34746f456ee1c85cc868b95031d49ba25f2c38a9 t/03.token_per_request.t
+SHA1 da7652a71789bed307555e28147172cf2b44ea67 t/04.cookie_options.t
 SHA1 66bfe8be526fd24544bc5004af9c5adcf40780dc t/lib/Plack/Test/MockHTTP.pm
-SHA1 a52e4dad0623f363f7827a631916d6ee9f933008 t/lib/Test/XSRFBlock/App.pm
+SHA1 a37c338ac10c977be811b9a88fdd688d1e6380e0 t/lib/Test/XSRFBlock/App.pm
 SHA1 3b8f77fe01a8f9345d58b87018c90f54d708494d t/lib/Test/XSRFBlock/Util.pm
 SHA1 3d3e9f1370ee4c83d847fe06b77bae14ac1e131a t/release-kwalitee.t
-SHA1 df65d7b7fbbcddd754cf17482fa95b43877fb28e t/release-no-tabs.t
-SHA1 9433c240fe590bc404ab68ff63984df763e347ed t/release-pod-coverage.t
-SHA1 b30cbdfaf935017c4568c0c91b242438cb87786e t/release-pod-syntax.t
+SHA1 f90beff789e118a4e8a05f4e95712188ae2ec301 t/release-no-tabs.t
+SHA1 7ed9a4703d44afb455535f99edb1c7bb3a161c49 t/release-pod-coverage.t
+SHA1 6a39e43c4d7c7e840c83c38d8498a6dcb2f2149a t/release-pod-syntax.t
+SHA1 91bacb1498d0fb115ed2f1130ffbe8d593931a2d weaver.ini
 -----BEGIN PGP SIGNATURE-----
 Version: GnuPG v1.4.11 (GNU/Linux)
 
-iEYEARECAAYFAlJlSbIACgkQh4j7xTiFuxHUagCcC/KXkyWdR5GI3Ysjba3rs9nK
-0owAoJAxN2l+8EGtJcOfuGgmqIdw/g/z
-=nAJD
+iEYEARECAAYFAlM1XgEACgkQh4j7xTiFuxFWhQCfVg9DKgceEggQRlm3Dw/dS7hW
+29wAn0tpQapAP8T8fQCLPZG1L3VSjQIO
+=kpee
 -----END PGP SIGNATURE-----

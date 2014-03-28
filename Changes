@@ -1,5 +1,9 @@
 Revision history for Plack-Middleware-XSRFBlock
 
+0.0.2     2014-03-28 11:33:16+00:00 UTC
+ - Add cookie_options setting [github:throughnothing]
+ - add and use Dist::Zilla::Plugin::ContributorsFromGit
+
 0.0.1     2013-10-21 15:35:10 UTC
  - Add header_name / X-* header feature
  - Add Git Commit and Push to end of dist.ini
