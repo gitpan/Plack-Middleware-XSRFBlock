@@ -1,5 +1,5 @@
 package Plack::Middleware::XSRFBlock;
-$Plack::Middleware::XSRFBlock::VERSION = '0.0.2';
+$Plack::Middleware::XSRFBlock::VERSION = '0.0.3';
 {
   $Plack::Middleware::XSRFBlock::DIST = 'Plack-Middleware-XSRFBlock';
 }
@@ -178,6 +178,8 @@ sub call {
                     !(
                         defined $attr
                             and
+                        exists $attr->{'action'}
+                            and
                         $attr->{'action'} =~ m{^https?://([^/:]+)[/:]}
                             and
                         defined $http_host
@@ -283,7 +285,7 @@ Plack::Middleware::XSRFBlock - Block XSRF Attacks with minimal changes to your a
 
 =head1 VERSION
 
-version 0.0.2
+version 0.0.3
 
 =head1 SYNOPSIS
 
@@ -494,6 +496,10 @@ Chisel <chisel.wright@net-a-porter.com>
 =item *
 
 Chisel Wright <chisel@chizography.net>
+
+=item *
+
+Sebastian Willert <willert@gmail.com>
 
 =item *
 

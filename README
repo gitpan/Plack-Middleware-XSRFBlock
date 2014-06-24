@@ -3,7 +3,7 @@ NAME
     to your app
 
 VERSION
-    version 0.0.2
+    version 0.0.3
 
 SYNOPSIS
     The simplest way to use the plugin is:
@@ -183,6 +183,8 @@ CONTRIBUTORS
     *   Chisel <chisel.wright@net-a-porter.com>
 
     *   Chisel Wright <chisel@chizography.net>
+
+    *   Sebastian Willert <willert@gmail.com>
 
     *   William Wolf <throughnothing@gmail.com>
 

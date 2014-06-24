@@ -1,5 +1,9 @@
 Revision history for Plack-Middleware-XSRFBlock
 
+0.0.3     2014-06-24 15:01:07+00:00 UTC
+ - Prevent a warning for forms with no action
+   [willert: pull #5]
+
 0.0.2     2014-03-28 11:33:16+00:00 UTC
  - Add cookie_options setting [github:throughnothing]
  - add and use Dist::Zilla::Plugin::ContributorsFromGit
