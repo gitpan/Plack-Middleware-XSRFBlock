@@ -1,5 +1,9 @@
 Revision history for Plack-Middleware-XSRFBlock
 
+0.0.4     2014-07-09 12:44:03+00:00 UTC
+ - Add PSGI env to xsrf_detected arguments
+   [mryall: pull #6]
+
 0.0.3     2014-06-24 15:01:07+00:00 UTC
  - Prevent a warning for forms with no action
    [willert: pull #5]
