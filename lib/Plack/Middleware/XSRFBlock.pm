@@ -1,5 +1,5 @@
 package Plack::Middleware::XSRFBlock;
-$Plack::Middleware::XSRFBlock::VERSION = '0.0.4';
+$Plack::Middleware::XSRFBlock::VERSION = '0.0.5';
 {
   $Plack::Middleware::XSRFBlock::DIST = 'Plack-Middleware-XSRFBlock';
 }
@@ -288,7 +288,7 @@ Plack::Middleware::XSRFBlock - Block XSRF Attacks with minimal changes to your a
 
 =head1 VERSION
 
-version 0.0.4
+version 0.0.5
 
 =head1 SYNOPSIS
 

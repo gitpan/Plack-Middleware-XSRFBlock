@@ -14,11 +14,6 @@
    },
    "name" : "Plack-Middleware-XSRFBlock",
    "prereqs" : {
-      "build" : {
-         "requires" : {
-            "Pod::Weaver::Section::Contributors" : "0"
-         }
-      },
       "configure" : {
          "requires" : {
             "ExtUtils::MakeMaker" : "6.30"
@@ -27,6 +22,7 @@
       "develop" : {
          "requires" : {
             "Pod::Coverage::TrustPod" : "0",
+            "Pod::Weaver::Section::Contributors" : "0",
             "Test::Kwalitee" : "1.12",
             "Test::More" : "0",
             "Test::NoTabs" : "0",
@@ -82,7 +78,7 @@
          "web" : "https://github.com/chiselwright/plack-middleware-xsrfblock"
       }
    },
-   "version" : "0.0.4",
+   "version" : "0.0.5",
    "x_contributors" : [
       "Chisel <chisel.wright@net-a-porter.com>",
       "Chisel Wright <chisel@chizography.net>",

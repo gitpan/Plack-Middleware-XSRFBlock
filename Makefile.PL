@@ -12,9 +12,7 @@ use ExtUtils::MakeMaker 6.30;
 my %WriteMakefileArgs = (
   "ABSTRACT" => "Block XSRF Attacks with minimal changes to your app",
   "AUTHOR" => "Chisel <chisel\@chizography.net>",
-  "BUILD_REQUIRES" => {
-    "Pod::Weaver::Section::Contributors" => 0
-  },
+  "BUILD_REQUIRES" => {},
   "CONFIGURE_REQUIRES" => {
     "ExtUtils::MakeMaker" => "6.30"
   },
@@ -54,7 +52,7 @@ my %WriteMakefileArgs = (
     "Test::UseAllModules" => 0,
     "Try::Tiny" => 0
   },
-  "VERSION" => "0.0.4",
+  "VERSION" => "0.0.5",
   "test" => {
     "TESTS" => "t/*.t"
   }
@@ -83,7 +81,6 @@ my %FallbackPrereqs = (
   "Plack::Test" => 0,
   "Plack::Util" => 0,
   "Plack::Util::Accessor" => 0,
-  "Pod::Weaver::Section::Contributors" => 0,
   "Sub::Exporter" => 0,
   "Test::More" => 0,
   "Test::UseAllModules" => 0,

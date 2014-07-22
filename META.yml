@@ -17,7 +17,6 @@ build_requires:
   Plack::Request: 0
   Plack::Session::State::Cookie: 0
   Plack::Test: 0
-  Pod::Weaver::Section::Contributors: 0
   Sub::Exporter: 0
   Test::More: 0
   Test::UseAllModules: 0
@@ -45,7 +44,7 @@ requires:
 resources:
   bugtracker: http://github.com/chiselwright/Plack-Middleware-XSRFBlock/issues
   repository: git://github.com/chiselwright/plack-middleware-xsrfblock.git
-version: 0.0.4
+version: 0.0.5
 x_contributors:
   - 'Chisel <chisel.wright@net-a-porter.com>'
   - 'Chisel Wright <chisel@chizography.net>'
