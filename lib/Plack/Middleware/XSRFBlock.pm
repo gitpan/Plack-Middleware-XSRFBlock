@@ -1,5 +1,5 @@
 package Plack::Middleware::XSRFBlock;
-$Plack::Middleware::XSRFBlock::VERSION = '0.0.5';
+$Plack::Middleware::XSRFBlock::VERSION = '0.0.6';
 {
   $Plack::Middleware::XSRFBlock::DIST = 'Plack-Middleware-XSRFBlock';
 }
@@ -19,6 +19,7 @@ use Plack::Util::Accessor qw(
     cookie_expiry_seconds
     cookie_name
     cookie_options
+    inject_form_input
     logger
     meta_tag
     token_per_request
@@ -32,6 +33,10 @@ sub prepare_app {
 
     # this needs a value if we aren't given one
     $self->parameter_name( $self->parameter_name || 'xsrf_token' );
+
+    # default to 1 so we inject hidden inputs to forms
+    $self->inject_form_input(
+        defined($self->inject_form_input) ? $self->inject_form_input : 1 );
 
     # store the cookie_name
     $self->cookie_name( $self->cookie_name || 'PSGI-XSRF-Token' );
@@ -131,6 +136,8 @@ sub call {
         if($ct !~ m{^text/html}i and $ct !~ m{^application/xhtml[+]xml}i){
             return $res;
         }
+
+        return $res unless $self->inject_form_input;
 
         # let's inject our field+token into the form
         my @out;
@@ -240,7 +247,7 @@ sub xsrf_detected {
     $self->log(error => 'XSRF detected, returning HTTP_FORBIDDEN');
 
     if (my $app_for_blocked = $self->blocked) {
-        return $app_for_blocked->($env, $@);
+        return $app_for_blocked->($env, $@, app => $self->app);
     }
 
     return [
@@ -288,7 +295,7 @@ Plack::Middleware::XSRFBlock - Block XSRF Attacks with minimal changes to your a
 
 =head1 VERSION
 
-version 0.0.5
+version 0.0.6
 
 =head1 SYNOPSIS
 
