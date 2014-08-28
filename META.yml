@@ -44,7 +44,7 @@ requires:
 resources:
   bugtracker: http://github.com/chiselwright/Plack-Middleware-XSRFBlock/issues
   repository: git://github.com/chiselwright/plack-middleware-xsrfblock.git
-version: 0.0.6
+version: 0.0.7
 x_contributors:
   - 'Chisel <chisel.wright@net-a-porter.com>'
   - 'Chisel Wright <chisel@chizography.net>'

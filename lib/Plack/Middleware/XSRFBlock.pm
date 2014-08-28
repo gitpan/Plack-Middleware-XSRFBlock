@@ -1,5 +1,5 @@
 package Plack::Middleware::XSRFBlock;
-$Plack::Middleware::XSRFBlock::VERSION = '0.0.6';
+$Plack::Middleware::XSRFBlock::VERSION = '0.0.7';
 {
   $Plack::Middleware::XSRFBlock::DIST = 'Plack-Middleware-XSRFBlock';
 }
@@ -35,8 +35,7 @@ sub prepare_app {
     $self->parameter_name( $self->parameter_name || 'xsrf_token' );
 
     # default to 1 so we inject hidden inputs to forms
-    $self->inject_form_input(
-        defined($self->inject_form_input) ? $self->inject_form_input : 1 );
+    $self->inject_form_input(1) unless defined $self->inject_form_input;
 
     # store the cookie_name
     $self->cookie_name( $self->cookie_name || 'PSGI-XSRF-Token' );
@@ -115,6 +114,16 @@ sub call {
         $cookie_value = $self->_token_generator->()
             if $self->token_per_request;
 
+        # make it easier to work with the headers
+        my $headers = Plack::Util::headers($res->[1]);
+
+        # we can't form-munge anything non-HTML
+        my $ct = $headers->get('Content-Type') || '';
+        if($ct !~ m{^text/html}i and $ct !~ m{^application/xhtml[+]xml}i){
+            return $res;
+        }
+
+        # GITHUB ISSUE #12 - set cookie after we're happy it's HTML
         # get the token value from:
         # - cookie value, if it's already set
         # - from the generator, if we don't have one yet
@@ -127,15 +136,6 @@ sub call {
             path    => '/',
             expires => time + $self->cookie_expiry_seconds,
         );
-
-        # make it easier to work with the headers
-        my $headers = Plack::Util::headers($res->[1]);
-
-        # we can't form-munge anything non-HTML
-        my $ct = $headers->get('Content-Type') || '';
-        if($ct !~ m{^text/html}i and $ct !~ m{^application/xhtml[+]xml}i){
-            return $res;
-        }
 
         return $res unless $self->inject_form_input;
 
@@ -295,7 +295,7 @@ Plack::Middleware::XSRFBlock - Block XSRF Attacks with minimal changes to your a
 
 =head1 VERSION
 
-version 0.0.6
+version 0.0.7
 
 =head1 SYNOPSIS
 
@@ -320,6 +320,7 @@ You may also over-ride any, or all of these values:
             cookie_expiry_seconds   => (3 * 60 * 60),
             token_per_request       => 0,
             meta_tag                => undef,
+            inject_form_input       => 1,
             header_name             => undef,
             blocked                 => sub {
                                         return [ $status, $headers, $body ]
@@ -369,6 +370,15 @@ section of output pages.
 
 This is useful when you are using javascript that requires access to the token
 value for making AJAX requests.
+
+=item inject_form_input (default: 1)
+
+If this is unset, hidden inputs will not be injected into your forms, and no
+HTML parsing will be done on the page responses.
+
+This can be useful if you only do AJAX requests, and can utilize headers
+and/or cookies instead, and not need the extra overhead of processing
+the HTML document every time.
 
 =item header_name (default: undef)
 

@@ -52,7 +52,7 @@ my %WriteMakefileArgs = (
     "Test::UseAllModules" => 0,
     "Try::Tiny" => 0
   },
-  "VERSION" => "0.0.6",
+  "VERSION" => "0.0.7",
   "test" => {
     "TESTS" => "t/*.t"
   }
