@@ -1,5 +1,5 @@
 package Plack::Middleware::XSRFBlock;
-$Plack::Middleware::XSRFBlock::VERSION = '0.0.7';
+$Plack::Middleware::XSRFBlock::VERSION = '0.0.8';
 {
   $Plack::Middleware::XSRFBlock::DIST = 'Plack-Middleware-XSRFBlock';
 }
@@ -18,6 +18,7 @@ use Plack::Util::Accessor qw(
     blocked
     cookie_expiry_seconds
     cookie_name
+    cookie_is_session_cookie
     cookie_options
     inject_form_input
     logger
@@ -39,6 +40,9 @@ sub prepare_app {
 
     # store the cookie_name
     $self->cookie_name( $self->cookie_name || 'PSGI-XSRF-Token' );
+
+    # cookie is session cookie
+    $self->cookie_is_session_cookie( $self->cookie_is_session_cookie || 0 );
 
     # extra optional options for the cookie
     $self->cookie_options( $self->cookie_options || {} );
@@ -129,12 +133,17 @@ sub call {
         # - from the generator, if we don't have one yet
         my $token = $cookie_value ||= $self->_token_generator->();
 
+        my %cookie_expires;
+        unless ( $self->cookie_is_session_cookie ) {
+            $cookie_expires{expires} = time + $self->cookie_expiry_seconds;
+        }
+
         # we need to add our cookie
         $self->_set_cookie(
             $token,
             $res,
             path    => '/',
-            expires => time + $self->cookie_expiry_seconds,
+            %cookie_expires,
         );
 
         return $res unless $self->inject_form_input;
@@ -295,7 +304,7 @@ Plack::Middleware::XSRFBlock - Block XSRF Attacks with minimal changes to your a
 
 =head1 VERSION
 
-version 0.0.7
+version 0.0.8
 
 =head1 SYNOPSIS
 
@@ -345,6 +354,15 @@ The name assigned to the hidden form input containing the token.
 =item cookie_name (default: 'PSGI-XSRF-Token')
 
 The name of the cookie used to store the token value.
+
+=item cookie_expiry_seconds (default: 3*60*60)
+
+The expiration time in seconds of the XSRF token
+
+=item cookie_is_session_cookie (default: 0)
+
+If set to a true value, the XSRF token cookie will be set as a session cookie
+and C<cookie_expiry_seconds> will be ignored.
 
 =item cookie_options (default: {})
 
@@ -520,6 +538,10 @@ Chisel Wright <chisel@chizography.net>
 =item *
 
 Matthew Ryall <matt.ryall@gmail.com>
+
+=item *
+
+Michael Kröll <michael.kroell@geizhals.at>
 
 =item *
 

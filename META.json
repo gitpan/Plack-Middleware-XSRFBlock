@@ -78,11 +78,12 @@
          "web" : "https://github.com/chiselwright/plack-middleware-xsrfblock"
       }
    },
-   "version" : "0.0.7",
+   "version" : "0.0.8",
    "x_contributors" : [
       "Chisel <chisel.wright@net-a-porter.com>",
       "Chisel Wright <chisel@chizography.net>",
       "Matthew Ryall <matt.ryall@gmail.com>",
+      "Michael Kr\u00f6ll <michael.kroell@geizhals.at>",
       "Sebastian Willert <willert@gmail.com>",
       "William Wolf <throughnothing@gmail.com>"
    ]

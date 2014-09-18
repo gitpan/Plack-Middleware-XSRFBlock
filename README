@@ -3,7 +3,7 @@ NAME
     to your app
 
 VERSION
-    version 0.0.7
+    version 0.0.8
 
 SYNOPSIS
     The simplest way to use the plugin is:
@@ -46,6 +46,13 @@ OPTIONS
 
     cookie_name (default: 'PSGI-XSRF-Token')
         The name of the cookie used to store the token value.
+
+    cookie_expiry_seconds (default: 3*60*60)
+        The expiration time in seconds of the XSRF token
+
+    cookie_is_session_cookie (default: 0)
+        If set to a true value, the XSRF token cookie will be set as a
+        session cookie and "cookie_expiry_seconds" will be ignored.
 
     cookie_options (default: {})
         Extra cookie options to be set with the cookie. This is useful for
@@ -194,6 +201,8 @@ CONTRIBUTORS
     *   Chisel Wright <chisel@chizography.net>
 
     *   Matthew Ryall <matt.ryall@gmail.com>
+
+    *   Michael Kröll <michael.kroell@geizhals.at>
 
     *   Sebastian Willert <willert@gmail.com>
 
