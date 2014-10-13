@@ -1,5 +1,5 @@
 package Plack::Middleware::XSRFBlock;
-$Plack::Middleware::XSRFBlock::VERSION = '0.0.8';
+$Plack::Middleware::XSRFBlock::VERSION = '0.0.9';
 {
   $Plack::Middleware::XSRFBlock::DIST = 'Plack-Middleware-XSRFBlock';
 }
@@ -9,6 +9,7 @@ use warnings;
 use parent 'Plack::Middleware';
 
 use Digest::HMAC_SHA1 'hmac_sha1_hex';
+use HTML::Escape qw(escape_html);
 use HTML::Parser;
 use HTTP::Status qw(:constants);
 
@@ -26,6 +27,7 @@ use Plack::Util::Accessor qw(
     token_per_request
     parameter_name
     header_name
+    secret
     _token_generator
 );
 
@@ -57,6 +59,13 @@ sub prepare_app {
         my $data    = rand() . $$ . {} . time;
         my $key     = "@INC";
         my $digest  = hmac_sha1_hex($data, $key);
+
+        if (defined $self->secret) {
+            my $sig = hmac_sha1_hex($digest, $self->secret);
+            $digest .= "--$sig";
+        }
+
+        return $digest;
     });
 }
 
@@ -109,6 +118,10 @@ sub call {
         # reject if the form value and the token don't match
         return $self->xsrf_detected( { env => $env, msg => 'invalid token' } )
           if $val ne $cookie_value;
+
+        return $self->xsrf_detected( { env => $env,
+                msg => 'invalid signature' } )
+          if $self->invalid_signature($val);
     }
 
     return Plack::Util::response_cb($self->app->($env), sub {
@@ -147,6 +160,9 @@ sub call {
         );
 
         return $res unless $self->inject_form_input;
+
+        # escape token (someone might have tampered with the cookie)
+        $token = escape_html($token);
 
         # let's inject our field+token into the form
         my @out;
@@ -245,6 +261,20 @@ sub call {
     });
 }
 
+sub invalid_signature {
+    my ($self, $value) = @_;
+
+    # we dont use signed cookies
+    return if !defined $self->secret;
+
+    # cookie isn't signed
+    my ($token, $signature) = split /--/, $value;
+    return 1 if !defined $signature || $signature eq '';
+
+    # signature doesn't validate
+    return hmac_sha1_hex($token, $self->secret) ne $signature;
+}
+
 sub xsrf_detected {
     my $self    = shift;
     my $args    = shift;
@@ -304,7 +334,7 @@ Plack::Middleware::XSRFBlock - Block XSRF Attacks with minimal changes to your a
 
 =head1 VERSION
 
-version 0.0.8
+version 0.0.9
 
 =head1 SYNOPSIS
 
@@ -331,6 +361,7 @@ You may also over-ride any, or all of these values:
             meta_tag                => undef,
             inject_form_input       => 1,
             header_name             => undef,
+            secret                  => undef,
             blocked                 => sub {
                                         return [ $status, $headers, $body ]
                                     },
@@ -404,6 +435,10 @@ If this is set, use the value as the name of the response heaer that the token
 can be sent in. This is useful for non-browser based submissions; e.g.
 Javascript AJAX requests.
 
+=item secret (default: undef)
+
+Signs the cookie with supplied secret (if set).
+
 =item blocked (default: undef)
 
 If this is set it should be a PSGI application that is returned instead of the
@@ -440,6 +475,11 @@ PSGI-XSRF-Token]
 
 The cookie token and form value were both submitted correctly but the values
 do not match.
+
+=item invalid signature
+
+The cookies signature is invalid, indicating it was tampered with on the way
+to the browser.
 
 =back
 
@@ -538,6 +578,10 @@ Chisel Wright <chisel@chizography.net>
 =item *
 
 Matthew Ryall <matt.ryall@gmail.com>
+
+=item *
+
+Matthias Zeichmann <matthias.zeichmann@gmail.com>
 
 =item *
 

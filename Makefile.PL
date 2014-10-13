@@ -22,6 +22,7 @@ my %WriteMakefileArgs = (
   "NAME" => "Plack::Middleware::XSRFBlock",
   "PREREQ_PM" => {
     "Digest::HMAC_SHA1" => 0,
+    "HTML::Escape" => 0,
     "HTML::Parser" => 0,
     "HTTP::Status" => 0,
     "Plack::Middleware" => 0,
@@ -52,7 +53,7 @@ my %WriteMakefileArgs = (
     "Test::UseAllModules" => 0,
     "Try::Tiny" => 0
   },
-  "VERSION" => "0.0.8",
+  "VERSION" => "0.0.9",
   "test" => {
     "TESTS" => "t/*.t"
   }
@@ -64,6 +65,7 @@ my %FallbackPrereqs = (
   "Data::Printer" => 0,
   "Digest::HMAC_SHA1" => 0,
   "FindBin::libs" => 0,
+  "HTML::Escape" => 0,
   "HTML::Parser" => 0,
   "HTTP::Cookies" => 0,
   "HTTP::Message::PSGI" => 0,

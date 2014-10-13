@@ -32,6 +32,7 @@ meta-spec:
 name: Plack-Middleware-XSRFBlock
 requires:
   Digest::HMAC_SHA1: 0
+  HTML::Escape: 0
   HTML::Parser: 0
   HTTP::Status: 0
   Plack::Middleware: 0
@@ -44,11 +45,12 @@ requires:
 resources:
   bugtracker: http://github.com/chiselwright/Plack-Middleware-XSRFBlock/issues
   repository: git://github.com/chiselwright/plack-middleware-xsrfblock.git
-version: 0.0.8
+version: 0.0.9
 x_contributors:
   - 'Chisel <chisel.wright@net-a-porter.com>'
   - 'Chisel Wright <chisel@chizography.net>'
   - 'Matthew Ryall <matt.ryall@gmail.com>'
+  - 'Matthias Zeichmann <matthias.zeichmann@gmail.com>'
   - 'Michael Kröll <michael.kroell@geizhals.at>'
   - 'Sebastian Willert <willert@gmail.com>'
   - 'William Wolf <throughnothing@gmail.com>'
